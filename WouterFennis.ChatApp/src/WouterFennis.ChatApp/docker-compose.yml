@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  mysql:
+    image: mysql
+    container_name: mysql-chat-app
+    environment:
+      MYSQL_ROOT_PASSWORD: Pa$$w0rd
+    networks:
+      - chat-app-network
+    ports:
+      - 9000:3306
+    volumes:
+      - "./../.data/db:/var/opt/mysql/"
+
+
+  wouterfennis.chatapp:
+    image: user/wouterfennis.chatapp${TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      dbconnectionstring: Datasource=hostname;pwd=Pa$$w0rd;
+    networks:
+      - chat-app-network
+    ports:
+      - 8001:80
+
+networks:
+  chat-app-network:

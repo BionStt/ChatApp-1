@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +8,7 @@ using Swashbuckle.Swagger.Model;
 using WouterFennis.ChatApp.DAL;
 using WouterFennis.ChatApp.DAL.Repositories;
 using WouterFennis.ChatApp.Domain;
-using Microsoft.EntityFrameworkCore;
+using MySQL.Data.EntityFrameworkCore.Extensions;
 
 namespace WouterFennis.ChatApp
 {
@@ -48,7 +45,7 @@ namespace WouterFennis.ChatApp
             var dockerConnectionString = Environment.GetEnvironmentVariable("dbconnectionstring");
             services.AddDbContext<ChatRoomContext>
             (
-                options => options.UseMySql(dockerConnectionString)
+                options => options.UseMySQL(dockerConnectionString)
             );
 
             // DI

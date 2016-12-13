@@ -8,6 +8,7 @@ namespace WouterFennis.ChatApp.Domain
 {
     public class Message
     {
+        public long Id { get; set; }
         [Required]
         public string Sender { get; set; }
         public DateTime CreatedOnUtc { get; private set; }

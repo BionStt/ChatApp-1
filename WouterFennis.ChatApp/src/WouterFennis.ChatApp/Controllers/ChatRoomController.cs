@@ -22,7 +22,7 @@ namespace WouterFennis.ChatApp.Controllers
         // GET: api/v1/ChatRoom
         [HttpGet]
         public IEnumerable<ChatRoom> Get()
-        {
+        {           
             return _chatRoomRepository.FindAll();
         }
 

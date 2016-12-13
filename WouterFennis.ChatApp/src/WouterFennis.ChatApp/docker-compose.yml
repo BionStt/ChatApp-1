@@ -32,7 +32,7 @@ services:
       dockerfile: Dockerfile
     environment:
       #dbconnectionstring: Server=mysql-chat-app; Port=3306; Database=chatrooms; Uid=wouter; Pwd=secret; SslMode=Preferred;
-      dbconnectionstring: server=mysql-chat-app;user id=wouter;password=secret;persistsecurityinfo=True;port=3306;database=chatrooms;
+      dbconnectionstring: server=mysql-chat-app;userid=wouter;password=secret;port=3306;database=chatrooms;
     networks:
       - chat-app-network
     ports:

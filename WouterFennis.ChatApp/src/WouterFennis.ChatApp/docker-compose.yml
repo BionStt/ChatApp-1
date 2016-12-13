@@ -5,14 +5,25 @@ services:
     image: mysql
     container_name: mysql-chat-app
     environment:
-      MYSQL_ROOT_PASSWORD: Pa$$w0rd
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: wouter
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: chatrooms
     networks:
       - chat-app-network
     ports:
-      - 9000:3306
-    volumes:
-      - "./../.data/db:/var/opt/mysql/"
+      - 3306:3306
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment: 
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: secret
+      PMA_HOST: mysql-chat-app
+    ports:
+      - 8181:80
+    networks:
+      - chat-app-network
 
   wouterfennis.chatapp:
     image: user/wouterfennis.chatapp${TAG}
@@ -20,7 +31,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      dbconnectionstring: Datasource=hostname;pwd=Pa$$w0rd;
+      dbconnectionstring: Server=mysql-chat-app; Port=3306; Database=chatrooms; Uid=wouter; Pwd=secret; SslMode=Preferred;
     networks:
       - chat-app-network
     ports:

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WouterFennis.ChatApp.Domain
 {
@@ -20,6 +17,11 @@ namespace WouterFennis.ChatApp.Domain
             Sender = sender;
             CreatedOnUtc = DateTime.UtcNow;
             Content = content;
+        }
+
+        public Message()
+        {
+
         }
     }
 }

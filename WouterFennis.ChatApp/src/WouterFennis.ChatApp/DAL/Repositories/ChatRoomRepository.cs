@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WouterFennis.ChatApp.Domain;
 
@@ -21,6 +19,11 @@ namespace WouterFennis.ChatApp.DAL.Repositories
         protected override long GetKeyFrom(ChatRoom item)
         {
             return item.Id;
+        }
+
+        public override IEnumerable<ChatRoom> FindByIdWithMessages(long id)
+        {
+            return GetDbSet().Where(chatRoom => chatRoom.Id == id).Include(chatRoom => chatRoom.Messages).ToList();
         }
     }
 }

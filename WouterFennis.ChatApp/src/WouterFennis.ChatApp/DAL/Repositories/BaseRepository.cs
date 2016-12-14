@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace WouterFennis.ChatApp.DAL.Repositories
@@ -22,6 +21,16 @@ namespace WouterFennis.ChatApp.DAL.Repositories
 
         protected abstract Key GetKeyFrom(Entity item);
 
+        public virtual bool Exists(Key id)
+        {
+            bool exists = false;
+            if(Find(id) != null)
+            {
+                exists = true;
+            }
+            return exists;
+        }
+
         public virtual void Delete(Key id)
         {
             Entity toRemove = Find(id);
@@ -31,7 +40,7 @@ namespace WouterFennis.ChatApp.DAL.Repositories
 
         public virtual Entity Find(Key id)
         {
-            return GetDbSet().Single(a => GetKeyFrom(a).Equals(id));
+            return GetDbSet().SingleOrDefault(a => GetKeyFrom(a).Equals(id));
         }
 
         public virtual IEnumerable<Entity> FindAll()
@@ -43,6 +52,8 @@ namespace WouterFennis.ChatApp.DAL.Repositories
         {
             return GetDbSet().Where(filter).ToList();
         }
+
+        public abstract IEnumerable<Entity> FindByIdWithMessages(long id);
 
         public virtual Key Insert(Entity item)
         {

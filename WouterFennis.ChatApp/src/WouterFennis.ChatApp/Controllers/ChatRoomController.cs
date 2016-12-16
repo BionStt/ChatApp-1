@@ -5,28 +5,27 @@ using WouterFennis.ChatApp.Domain;
 using WouterFennis.ChatApp.DAL.Repositories;
 using System.Net;
 using Swashbuckle.SwaggerGen.Annotations;
-
-// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+using WouterFennis.ChatApp.Managers;
 
 namespace WouterFennis.ChatApp.Controllers
 {
     [Route("api/v1/[controller]")]
     public class ChatRoomController : Controller
     {
-        private IRepository<ChatRoom, long> _chatRoomRepository;
+        private IChatRoomManager _chatRoomManager;
 
-        public ChatRoomController(IRepository<ChatRoom, long> chatRoomRepository)
+        public ChatRoomController(IChatRoomManager chatRoomManager)
         {
-            _chatRoomRepository = chatRoomRepository;
+            _chatRoomManager = chatRoomManager;
         }
         // GET: api/v1/ChatRoom
         [HttpGet]
         [SwaggerOperation("GetAllChatRooms")]
         [ProducesResponseType(typeof(IEnumerable<ChatRoom>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IEnumerable<ChatRoom> Get()
-        {       
-            IEnumerable<ChatRoom> chatRooms = _chatRoomRepository.FindAll();
+        public IEnumerable<ChatRoom> GetAllChatRooms()
+        {
+            IEnumerable<ChatRoom> chatRooms = _chatRoomManager.GetAllChatRooms();
             return chatRooms;
         }
 
@@ -36,15 +35,41 @@ namespace WouterFennis.ChatApp.Controllers
         [SwaggerOperation("GetChatRoomById")]
         [ProducesResponseType(typeof(ChatRoom), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        public IActionResult GetById(long id)
+        public IActionResult GetChatRoomById(long chatRoomId)
         {
-            ChatRoom foundChatRoom = null;
-            if (_chatRoomRepository.Exists(id))
+            try
             {
-                foundChatRoom = _chatRoomRepository.FindByIdWithMessages(id).FirstOrDefault();
+                ChatRoom foundChatRoom = _chatRoomManager.FindChatRoomById(chatRoomId);
                 return new ObjectResult(foundChatRoom);
             }
-            return NotFound();
+            catch(KeyNotFoundException exception)
+            {
+                return NotFound();
+            }
+        }
+
+        // POST api/v1/ChatRoom/1
+        [HttpPost]
+        [Route("{id}")]
+        [SwaggerOperation("AddMessageToChatRoom")]
+        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        public IActionResult AddMessageToChatRoom(long chatRoomId, [FromBody]Message message)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                _chatRoomManager.AddMessageToChatRoom(chatRoomId, message);
+                return Ok();
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         // POST api/v1/ChatRoom
@@ -52,13 +77,14 @@ namespace WouterFennis.ChatApp.Controllers
         [SwaggerOperation("AddChatRoom")]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public ActionResult Post([FromBody]ChatRoom chatRoom)
+        public IActionResult AddChatRoom([FromBody]ChatRoom chatRoom)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            _chatRoomRepository.Insert(chatRoom);
+            long chatRoomId = _chatRoomManager.AddChatRoom(chatRoom);
+            // chatRoomId isn't used ATM
             return Ok();
         }
     }

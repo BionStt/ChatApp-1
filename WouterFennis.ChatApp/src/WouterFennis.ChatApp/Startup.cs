@@ -9,6 +9,7 @@ using WouterFennis.ChatApp.DAL;
 using WouterFennis.ChatApp.DAL.Repositories;
 using WouterFennis.ChatApp.Domain;
 using MySQL.Data.EntityFrameworkCore.Extensions;
+using WouterFennis.ChatApp.Managers;
 
 namespace WouterFennis.ChatApp
 {
@@ -50,6 +51,7 @@ namespace WouterFennis.ChatApp
 
             // DI
             services.AddScoped<IRepository<ChatRoom, long>, ChatRoomRepository>();
+            services.AddScoped<IChatRoomManager, ChatRoomManager>();
 
             // Add swagger
             services.AddSwaggerGen();

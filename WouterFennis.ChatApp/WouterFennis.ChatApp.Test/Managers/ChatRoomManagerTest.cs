@@ -10,9 +10,6 @@ using WouterFennis.ChatApp.Managers;
 
 namespace WouterFennis.ChatApp.Test.Managers
 {
-    //IEnumerable<ChatRoom> GetAllChatRooms();
-    //ChatRoom FindChatRoomById(long id);
-    //void AddMessageToChatRoom(long chatRoomId, Message message);
     //long AddChatRoom(ChatRoom chatRoom);
     [TestClass]
     public class ChatRoomManagerTest
@@ -153,6 +150,44 @@ namespace WouterFennis.ChatApp.Test.Managers
 
             // Assert
             chatRoomRepositoryMock.Verify(repository => repository.Update(It.IsAny<ChatRoom>()), Times.Once);
+        }
+
+        [TestMethod]
+        public void AddChatRoomCallsRepository()
+        {
+            // Arrange
+            var chatRoomRepositoryMock = new Mock<IRepository<ChatRoom, long>>(MockBehavior.Strict);
+            chatRoomRepositoryMock.Setup(repository => repository.Insert(It.IsAny<ChatRoom>())).Returns(1);
+            ChatRoomManager chatRoomManager = new ChatRoomManager(chatRoomRepositoryMock.Object);
+
+            ChatRoom chatRoom = new ChatRoom("room");
+
+            // Act
+            chatRoomManager.AddChatRoom(chatRoom);
+
+            // Assert
+            chatRoomRepositoryMock.Verify(repository => repository.Insert(It.IsAny<ChatRoom>()), Times.Once);
+        }
+
+        [TestMethod]
+        public void AddChatRoomCallsRepositoryWithSameParameter()
+        {
+            // Arrange
+            ChatRoom parameter = null;
+            var chatRoomRepositoryMock = new Mock<IRepository<ChatRoom, long>>(MockBehavior.Strict);
+            chatRoomRepositoryMock.Setup(repository => repository.Insert(It.IsAny<ChatRoom>()))
+                .Callback<ChatRoom>((chatRoom) => parameter = chatRoom)
+                .Returns(1);
+            ChatRoomManager chatRoomManager = new ChatRoomManager(chatRoomRepositoryMock.Object);
+
+            ChatRoom newChatRoom = new ChatRoom("room");
+
+            // Act
+            chatRoomManager.AddChatRoom(newChatRoom);
+
+            // Assert
+            Assert.AreEqual("room", parameter.Name);
+            Assert.AreEqual(0, parameter.Messages.Count);
         }
     }
 }

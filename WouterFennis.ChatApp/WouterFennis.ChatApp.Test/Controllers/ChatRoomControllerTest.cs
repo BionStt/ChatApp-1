@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using WouterFennis.ChatApp.Controllers;
 using WouterFennis.ChatApp.DAL.Repositories;
 using WouterFennis.ChatApp.Domain;
+using WouterFennis.ChatApp.Managers;
 
 namespace WouterFennis.ChatApp.Test
 {
@@ -16,15 +17,15 @@ namespace WouterFennis.ChatApp.Test
     public class ChatRoomControllerTest
     {
         [TestMethod]
-        public void GetReturnsIEnumerableOfTypeChatRoom()
+        public void GetAllChatRoomsReturnsIEnumerableOfChatRoom()
         {
             // Arrange
-            var chatRoomRepositoryMock = new Mock<IRepository<ChatRoom, long>>(MockBehavior.Strict);
-            chatRoomRepositoryMock.Setup(repository => repository.FindAll()).Returns(new List<ChatRoom>());
-            ChatRoomController chatRoomController = new ChatRoomController(chatRoomRepositoryMock.Object);
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.GetAllChatRooms()).Returns(new List<ChatRoom>());
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
 
             // Act
-            var result = chatRoomController.Get();
+            var result = chatRoomController.GetAllChatRooms();
 
             // Assert
             Assert.IsNotNull(result);
@@ -32,37 +33,98 @@ namespace WouterFennis.ChatApp.Test
         }
 
         [TestMethod]
-        public void PostReturnsActionResult()
+        public void GetAllChatRoomsCallChatRoomManager()
         {
             // Arrange
-            var chatRoomRepositoryMock = new Mock<IRepository<ChatRoom, long>>(MockBehavior.Strict);
-            chatRoomRepositoryMock.Setup(repository => repository.Insert(It.IsAny<ChatRoom>())).Returns(1);
-            ChatRoomController chatRoomController = new ChatRoomController(chatRoomRepositoryMock.Object);
-
-            ChatRoom chatRoom = new ChatRoom("Room");
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.GetAllChatRooms()).Returns(new List<ChatRoom>());
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
 
             // Act
-            SimulateValidation(chatRoom, chatRoomController);
-            var result = chatRoomController.Post(chatRoom);
+            var result = chatRoomController.GetAllChatRooms();
+
+            // Assert
+            chatRoomManagerMock.Verify(manager => manager.GetAllChatRooms(), Times.Once);
+        }
+        
+        [TestMethod]
+        public void GetChatRoomByIdReturnsIActionResult()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.FindChatRoomById(It.IsAny<long>())).Returns(new ChatRoom());
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+            long chatRoomId = 1;
+            // Act
+            var result = chatRoomController.GetChatRoomById(chatRoomId);
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(ActionResult));
+            Assert.IsInstanceOfType(result, typeof(IActionResult));
         }
 
         [TestMethod]
-        public void PostReturnsStatusCodeResult()
+        public void GetChatRoomByIdWithValidIdReturnsObjectResult()
         {
             // Arrange
-            var chatRoomRepositoryMock = new Mock<IRepository<ChatRoom, long>>(MockBehavior.Strict);
-            chatRoomRepositoryMock.Setup(repository => repository.Insert(It.IsAny<ChatRoom>())).Returns(1);
-            ChatRoomController chatRoomController = new ChatRoomController(chatRoomRepositoryMock.Object);
-
-            ChatRoom chatRoom = new ChatRoom("Room");
-
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.FindChatRoomById(It.IsAny<long>())).Returns(new ChatRoom());
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+            long chatRoomId = 1;
             // Act
-            SimulateValidation(chatRoom, chatRoomController);
-            var result = chatRoomController.Post(chatRoom);
+            var result = chatRoomController.GetChatRoomById(chatRoomId);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(ObjectResult));
+            ObjectResult objectResult = (ObjectResult)result;
+            Assert.IsInstanceOfType(objectResult.Value, typeof(ChatRoom));
+        }
+
+        [TestMethod]
+        public void GetChatRoomByIdWithInvalidIdReturnsNotFoundResult()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.FindChatRoomById(It.IsAny<long>())).Throws(new KeyNotFoundException());
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+            long chatRoomId = 1;
+            // Act
+            var result = chatRoomController.GetChatRoomById(chatRoomId);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
+        }
+        
+        [TestMethod]
+        public void AddMessageToChatRoomReturnsIActionResult()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddMessageToChatRoom(It.IsAny<long>(), It.IsAny<Message>()));
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+            long chatRoomId = 1;
+            Message message = new Message("Carla Red", "Hello World");
+            // Act
+            var result = chatRoomController.AddMessageToChatRoom(chatRoomId, message);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(IActionResult));
+        }
+
+        [TestMethod]
+        public void AddMessageToChatRoomReturnsStatusCodeResult()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddMessageToChatRoom(It.IsAny<long>(), It.IsAny<Message>()));
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+            long chatRoomId = 1;
+            Message message = new Message("Carla Red", "Hello World");
+            // Act
+            var result = chatRoomController.AddMessageToChatRoom(chatRoomId, message);
 
             // Assert
             Assert.IsNotNull(result);
@@ -70,12 +132,150 @@ namespace WouterFennis.ChatApp.Test
         }
 
         [TestMethod]
-        public void PostWithValidChatRoomReturnsStatusCode200()
+        public void AddMessageToChatRoomWithValidInputReturnsStatusCode200()
         {
             // Arrange
-            var chatRoomRepositoryMock = new Mock<IRepository<ChatRoom, long>>(MockBehavior.Strict);
-            chatRoomRepositoryMock.Setup(repository => repository.Insert(It.IsAny<ChatRoom>())).Returns(1);
-            ChatRoomController chatRoomController = new ChatRoomController(chatRoomRepositoryMock.Object);
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddMessageToChatRoom(It.IsAny<long>(), It.IsAny<Message>()));
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+            long chatRoomId = 1;
+            Message message = new Message("Carla Red", "Hello World");
+            int expectedStatusCode = 200;
+            int expectedErrorCount = 0;
+
+            // Act
+            SimulateValidation(message, chatRoomController);
+            var result = chatRoomController.AddMessageToChatRoom(chatRoomId, message);
+
+            // Assert
+            Assert.IsNotNull(result);
+            StatusCodeResult statusCodeResult = (StatusCodeResult)result;
+            Assert.AreEqual(expectedStatusCode, statusCodeResult.StatusCode);
+
+            var modelState = chatRoomController.ModelState;
+            Assert.AreEqual(expectedErrorCount, modelState.ErrorCount);
+        }
+
+        [TestMethod]
+        public void AddMessageToChatRoomWithSenderNullReturnsStatusCode400()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddMessageToChatRoom(It.IsAny<long>(), It.IsAny<Message>()));
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+            long chatRoomId = 1;
+            Message message = new Message(null, "Hello World");
+            int expectedStatusCode = 400;
+            int expectedErrorCount = 1;
+
+            // Act
+            SimulateValidation(message, chatRoomController);
+            var result = chatRoomController.AddMessageToChatRoom(chatRoomId, message);
+
+            // Assert
+            Assert.IsNotNull(result);
+            StatusCodeResult statusCodeResult = (StatusCodeResult)result;
+            Assert.AreEqual(expectedStatusCode, statusCodeResult.StatusCode);
+
+            var modelState = chatRoomController.ModelState;
+            Assert.AreEqual(expectedErrorCount, modelState.ErrorCount);
+        }
+
+        [TestMethod]
+        public void AddMessageToChatRoomWithMessageNullReturnsStatusCode400()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddMessageToChatRoom(It.IsAny<long>(), It.IsAny<Message>()));
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+            long chatRoomId = 1;
+            Message message = new Message("Carla Red", null);
+            int expectedStatusCode = 400;
+            int expectedErrorCount = 1;
+
+            // Act
+            SimulateValidation(message, chatRoomController);
+            var result = chatRoomController.AddMessageToChatRoom(chatRoomId, message);
+
+            // Assert
+            Assert.IsNotNull(result);
+            StatusCodeResult statusCodeResult = (StatusCodeResult)result;
+            Assert.AreEqual(expectedStatusCode, statusCodeResult.StatusCode);
+
+            var modelState = chatRoomController.ModelState;
+            Assert.AreEqual(expectedErrorCount, modelState.ErrorCount);
+        }
+
+        [TestMethod]
+        public void AddMessageToChatRoomWithInvalidIdReturnsStatusCode404()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddMessageToChatRoom(It.IsAny<long>(), It.IsAny<Message>())).Throws(new KeyNotFoundException());
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+            long chatRoomId = 1;
+            Message message = new Message("Carla Red", "Hello World");
+            int expectedStatusCode = 404;
+            int expectedErrorCount = 0;
+
+            // Act
+            SimulateValidation(message, chatRoomController);
+            var result = chatRoomController.AddMessageToChatRoom(chatRoomId, message);
+
+            // Assert
+            Assert.IsNotNull(result);
+            StatusCodeResult statusCodeResult = (StatusCodeResult)result;
+            Assert.AreEqual(expectedStatusCode, statusCodeResult.StatusCode);
+
+            var modelState = chatRoomController.ModelState;
+            Assert.AreEqual(expectedErrorCount, modelState.ErrorCount);
+        }
+
+        [TestMethod]
+        public void AddChatRoomReturnsIActionResult()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddChatRoom(It.IsAny<ChatRoom>())).Returns(1);
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+
+            ChatRoom chatRoom = new ChatRoom("Room");
+
+            // Act
+            SimulateValidation(chatRoom, chatRoomController);
+            var result = chatRoomController.AddChatRoom(chatRoom);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(IActionResult));
+        }
+
+        [TestMethod]
+        public void AddChatRoomReturnsStatusCodeResult()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddChatRoom(It.IsAny<ChatRoom>())).Returns(1);
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
+
+            ChatRoom chatRoom = new ChatRoom("Room");
+
+            // Act
+            SimulateValidation(chatRoom, chatRoomController);
+            var result = chatRoomController.AddChatRoom(chatRoom);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(StatusCodeResult));
+        }
+
+        [TestMethod]
+        public void AddChatRoomWithValidChatRoomReturnsStatusCode200()
+        {
+            // Arrange
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddChatRoom(It.IsAny<ChatRoom>())).Returns(1);
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
 
             ChatRoom chatRoom = new ChatRoom("Room");
             int expectedStatusCode = 200;
@@ -83,7 +283,7 @@ namespace WouterFennis.ChatApp.Test
 
             // Act
             SimulateValidation(chatRoom, chatRoomController);
-            var result = chatRoomController.Post(chatRoom);
+            var result = chatRoomController.AddChatRoom(chatRoom);
 
             // Assert
             Assert.IsNotNull(result);
@@ -95,12 +295,12 @@ namespace WouterFennis.ChatApp.Test
         }
 
         [TestMethod]
-        public void PostWithNameNullReturnsStatusCode400()
+        public void AddChatRoomWithNameNullReturnsStatusCode400()
         {
             // Arrange
-            var chatRoomRepositoryMock = new Mock<IRepository<ChatRoom, long>>(MockBehavior.Strict);
-            chatRoomRepositoryMock.Setup(repository => repository.Insert(It.IsAny<ChatRoom>())).Returns(1);
-            ChatRoomController chatRoomController = new ChatRoomController(chatRoomRepositoryMock.Object);
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddChatRoom(It.IsAny<ChatRoom>())).Returns(1);
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
 
             ChatRoom chatRoom = new ChatRoom(null);
             int expectedStatusCode = 400;
@@ -108,7 +308,7 @@ namespace WouterFennis.ChatApp.Test
 
             // Act
             SimulateValidation(chatRoom, chatRoomController);
-            var result = chatRoomController.Post(chatRoom);
+            var result = chatRoomController.AddChatRoom(chatRoom);
 
             // Assert
             Assert.IsNotNull(result);
@@ -121,12 +321,12 @@ namespace WouterFennis.ChatApp.Test
         }
 
         [TestMethod]
-        public void PostWithNameEmptyReturnsStatusCode400()
+        public void AddChatRoomWithNameEmptyReturnsStatusCode400()
         {
             // Arrange
-            var chatRoomRepositoryMock = new Mock<IRepository<ChatRoom, long>>(MockBehavior.Strict);
-            chatRoomRepositoryMock.Setup(repository => repository.Insert(It.IsAny<ChatRoom>())).Returns(1);
-            ChatRoomController chatRoomController = new ChatRoomController(chatRoomRepositoryMock.Object);
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddChatRoom(It.IsAny<ChatRoom>())).Returns(1);
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
 
             ChatRoom chatRoom = new ChatRoom("");
             int expectedStatusCode = 400;
@@ -134,7 +334,7 @@ namespace WouterFennis.ChatApp.Test
 
             // Act
             SimulateValidation(chatRoom, chatRoomController);
-            var result = chatRoomController.Post(chatRoom);
+            var result = chatRoomController.AddChatRoom(chatRoom);
 
             // Assert
             Assert.IsNotNull(result);
@@ -147,21 +347,21 @@ namespace WouterFennis.ChatApp.Test
         }
 
         [TestMethod]
-        public void PostWithValidChatRoomCallsRepository()
+        public void PostWithValidChatRoomCallsChatRoomManager()
         {
             // Arrange
-            var chatRoomRepositoryMock = new Mock<IRepository<ChatRoom, long>>(MockBehavior.Strict);
-            chatRoomRepositoryMock.Setup(repository => repository.Insert(It.IsAny<ChatRoom>())).Returns(1);
-            ChatRoomController chatRoomController = new ChatRoomController(chatRoomRepositoryMock.Object);
+            var chatRoomManagerMock = new Mock<IChatRoomManager>(MockBehavior.Strict);
+            chatRoomManagerMock.Setup(manager => manager.AddChatRoom(It.IsAny<ChatRoom>())).Returns(1);
+            ChatRoomController chatRoomController = new ChatRoomController(chatRoomManagerMock.Object);
 
             ChatRoom chatRoom = new ChatRoom("Room");
 
             // Act
             SimulateValidation(chatRoom, chatRoomController);
-            chatRoomController.Post(chatRoom);
+            chatRoomController.AddChatRoom(chatRoom);
 
             // Assert
-            chatRoomRepositoryMock.Verify(repository => repository.Insert(It.IsAny<ChatRoom>()), Times.Once);
+            chatRoomManagerMock.Verify(manager => manager.AddChatRoom(It.IsAny<ChatRoom>()), Times.Once);
         }
 
         private void SimulateValidation(object model, ChatRoomController chatRoomController)

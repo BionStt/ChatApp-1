@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  wouterfennis.chatapp.frontend:
+    image: user/wouterfennis.chatapp.frontend${TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - chat-app-network
+      - marowo_network
+    #depends_on:
+     # - "wouterfennis.chatapp.backend"
+    ports:
+      - 8002:80
+
+networks:
+  marowo_network: 
+    external:
+      name: marowo_network
+  chat-app-network:

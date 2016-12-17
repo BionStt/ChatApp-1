@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using WouterFennis.ChatApp.BackEnd.Domain;
+using Microsoft.EntityFrameworkCore;
+using WouterFennis.ChatApp.Domain;
 
-namespace WouterFennis.ChatApp.BackEnd.DAL.Repositories
+namespace WouterFennis.ChatApp.DAL.Repositories
 {
     public class ChatRoomRepository : BaseRepository<ChatRoom, long, ChatRoomContext>
     {

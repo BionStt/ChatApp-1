@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace WouterFennis.ChatApp.BackEnd.Domain
+namespace WouterFennis.ChatApp.Domain
 {
     public class ChatRoom
     {
@@ -10,10 +10,12 @@ namespace WouterFennis.ChatApp.BackEnd.Domain
         public string Name { get; set; }
         public List<Message> Messages { get; set; }
 
+
         public ChatRoom()
         {
 
         }
+
 
         public ChatRoom(string name)
         {

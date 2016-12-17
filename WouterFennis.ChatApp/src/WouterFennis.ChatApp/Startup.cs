@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MySQL.Data.EntityFrameworkCore.Extensions;
-using WouterFennis.ChatApp.BackEnd.DAL;
-using WouterFennis.ChatApp.BackEnd.DAL.Repositories;
-using WouterFennis.ChatApp.BackEnd.Domain;
-using WouterFennis.ChatApp.BackEnd.Managers;
 using Swashbuckle.Swagger.Model;
+using WouterFennis.ChatApp.DAL;
+using WouterFennis.ChatApp.DAL.Repositories;
+using WouterFennis.ChatApp.Domain;
+using MySQL.Data.EntityFrameworkCore.Extensions;
+using WouterFennis.ChatApp.Managers;
 
-namespace WouterFennis.ChatApp.BackEnd
+namespace WouterFennis.ChatApp
 {
     public class Startup
     {

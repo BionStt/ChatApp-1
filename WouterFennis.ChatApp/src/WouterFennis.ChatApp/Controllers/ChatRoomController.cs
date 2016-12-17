@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using WouterFennis.ChatApp.BackEnd.Managers;
-using Swashbuckle.SwaggerGen.Annotations;
-using WouterFennis.ChatApp.BackEnd.Domain;
+using WouterFennis.ChatApp.Domain;
+using WouterFennis.ChatApp.DAL.Repositories;
 using System.Net;
+using Swashbuckle.SwaggerGen.Annotations;
+using WouterFennis.ChatApp.Managers;
 
-namespace WouterFennis.ChatApp.BackEnd.Controllers
+namespace WouterFennis.ChatApp.Controllers
 {
     [Route("api/v1/[controller]")]
     public class ChatRoomController : Controller
@@ -40,7 +42,7 @@ namespace WouterFennis.ChatApp.BackEnd.Controllers
                 ChatRoom foundChatRoom = _chatRoomManager.FindChatRoomById(chatRoomId);
                 return new ObjectResult(foundChatRoom);
             }
-            catch (KeyNotFoundException exception)
+            catch(KeyNotFoundException exception)
             {
                 return NotFound();
             }

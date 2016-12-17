@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace WouterFennis.ChatApp.BackEnd.DAL.Repositories
+namespace WouterFennis.ChatApp.DAL.Repositories
 {
     public interface IRepository<Entity, Key> : IDisposable
     {

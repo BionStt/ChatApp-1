@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
-using WouterFennis.ChatApp.BackEnd.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using WouterFennis.ChatApp.Domain;
 
-namespace WouterFennis.ChatApp.BackEnd.Managers
+namespace WouterFennis.ChatApp.Managers
 {
     public interface IChatRoomManager
     {

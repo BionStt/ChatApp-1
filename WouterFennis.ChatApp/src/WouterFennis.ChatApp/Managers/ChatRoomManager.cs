@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using WouterFennis.ChatApp.BackEnd.DAL.Repositories;
-using WouterFennis.ChatApp.BackEnd.Domain;
+using System.Threading.Tasks;
+using WouterFennis.ChatApp.DAL.Repositories;
+using WouterFennis.ChatApp.Domain;
 
-namespace WouterFennis.ChatApp.BackEnd.Managers
+namespace WouterFennis.ChatApp.Managers
 {
     public class ChatRoomManager : IChatRoomManager
     {
@@ -26,8 +28,7 @@ namespace WouterFennis.ChatApp.BackEnd.Managers
             if (_chatRoomRepository.Exists(chatRoomId))
             {
                 foundChatRoom = _chatRoomRepository.FindByIdWithMessages(chatRoomId).FirstOrDefault();
-            }
-            else
+            } else
             {
                 throw new KeyNotFoundException();
             }
@@ -37,12 +38,11 @@ namespace WouterFennis.ChatApp.BackEnd.Managers
         public void AddMessageToChatRoom(long chatRoomId, Message message)
         {
             ChatRoom foundChatRoom = FindChatRoomById(chatRoomId);
-            if (foundChatRoom != null)
+            if(foundChatRoom != null)
             {
                 foundChatRoom.Messages.Add(message);
                 _chatRoomRepository.Update(foundChatRoom);
-            }
-            else
+            } else
             {
                 throw new KeyNotFoundException();
             }

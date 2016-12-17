@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
-namespace WouterFennis.ChatApp.BackEnd.DAL.Repositories
+namespace WouterFennis.ChatApp.DAL.Repositories
 {
     public abstract class BaseRepository<Entity, Key, Context> : IRepository<Entity, Key>
-     where Entity : class
-     where Context : DbContext
+    where Entity : class
+    where Context : DbContext
     {
         protected Context _context;
 
@@ -24,7 +24,7 @@ namespace WouterFennis.ChatApp.BackEnd.DAL.Repositories
         public virtual bool Exists(Key id)
         {
             bool exists = false;
-            if (Find(id) != null)
+            if(Find(id) != null)
             {
                 exists = true;
             }

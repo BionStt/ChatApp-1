@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace WouterFennis.ChatApp.BackEnd.Domain
+namespace WouterFennis.ChatApp.Domain
 {
     public class Message
     {

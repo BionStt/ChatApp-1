@@ -1,0 +1,1 @@
+AutoRest.exe -Input "chatroom_backend_swagger.json" -OutputDirectory "ChatRoomBackendServiceAgent" -ClientName "ChatRoomBackendServiceAgent" -Namespace "WouterFennis.ChatApp.FrontEnd.Agents" -CodeGenerator CSharp -Modeler Swagger

@@ -1,0 +1,188 @@
+﻿{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1",
+    "title": "ChatApp Service",
+    "description": "ChatpApp Service",
+    "termsOfService": "None"
+  },
+  "basePath": "/",
+  "paths": {
+    "/api/v1/ChatRoom": {
+      "get": {
+        "tags": [ "ChatRoom" ],
+        "operationId": "GetAllChatRooms",
+        "consumes": [],
+        "produces": [ "text/plain", "application/json", "text/json" ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/ChatRoom" }
+            }
+          },
+          "400": {
+            "description": "Client Error",
+            "schema": { "$ref": "#/definitions/BadRequestResult" }
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": [ "ChatRoom" ],
+        "operationId": "AddChatRoom",
+        "consumes": [ "application/json", "text/json", "application/json-patch+json" ],
+        "produces": [ "text/plain", "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "chatRoom",
+            "in": "body",
+            "required": false,
+            "schema": { "$ref": "#/definitions/ChatRoom" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/OkResult" }
+          },
+          "400": {
+            "description": "Client Error",
+            "schema": { "$ref": "#/definitions/BadRequestResult" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/v1/ChatRoom/{chatRoomId}": {
+      "get": {
+        "tags": [ "ChatRoom" ],
+        "operationId": "GetChatRoomById",
+        "consumes": [],
+        "produces": [ "text/plain", "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "chatRoomId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/ChatRoom" }
+          },
+          "404": {
+            "description": "Client Error",
+            "schema": { "$ref": "#/definitions/NotFoundResult" }
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": [ "ChatRoom" ],
+        "operationId": "AddMessageToChatRoom",
+        "consumes": [ "application/json", "text/json", "application/json-patch+json" ],
+        "produces": [ "text/plain", "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "chatRoomId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "message",
+            "in": "body",
+            "required": false,
+            "schema": { "$ref": "#/definitions/Message" }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Client Error",
+            "schema": { "$ref": "#/definitions/BadRequestResult" }
+          },
+          "200": {
+            "description": "Success",
+            "schema": { "$ref": "#/definitions/OkResult" }
+          },
+          "404": {
+            "description": "Client Error",
+            "schema": { "$ref": "#/definitions/NotFoundResult" }
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "definitions": {
+    "ChatRoom": {
+      "required": [ "name" ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "name": { "type": "string" },
+        "messages": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Message" }
+        }
+      }
+    },
+    "Message": {
+      "required": [ "sender", "content" ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "sender": { "type": "string" },
+        "createdOnUtc": {
+          "format": "date-time",
+          "type": "string",
+          "readOnly": true
+        },
+        "content": { "type": "string" }
+      }
+    },
+    "BadRequestResult": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "format": "int32",
+          "type": "integer",
+          "readOnly": true
+        }
+      }
+    },
+    "OkResult": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "format": "int32",
+          "type": "integer",
+          "readOnly": true
+        }
+      }
+    },
+    "NotFoundResult": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "format": "int32",
+          "type": "integer",
+          "readOnly": true
+        }
+      }
+    }
+  },
+  "securityDefinitions": {}
+}

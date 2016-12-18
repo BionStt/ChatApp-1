@@ -20,7 +20,6 @@ namespace WouterFennis.ChatApp.BackEnd.Controllers
         [HttpGet]
         [SwaggerOperation("GetAllChatRooms")]
         [ProducesResponseType(typeof(IEnumerable<ChatRoom>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
         public IEnumerable<ChatRoom> GetAllChatRooms()
         {
             IEnumerable<ChatRoom> chatRooms = _chatRoomManager.GetAllChatRooms();

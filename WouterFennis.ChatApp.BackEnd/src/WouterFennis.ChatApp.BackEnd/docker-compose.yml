@@ -10,7 +10,7 @@ services:
       MYSQL_PASSWORD: secret
       MYSQL_DATABASE: chatrooms
     networks:
-      - chat-app-network
+      - database-network
     ports:
       - 3306:3306
 
@@ -23,7 +23,7 @@ services:
     ports:
       - 8181:80
     networks:
-      - chat-app-network
+      - database-network
     depends_on:
       - "mysql"
 
@@ -36,6 +36,7 @@ services:
       dbconnectionstring: server=mysql-chat-app;userid=wouter;password=secret;port=3306;database=chatrooms;
     networks:
       - chat-app-network
+      - database-network
     depends_on:
       - "mysql"
     ports:
@@ -43,3 +44,6 @@ services:
 
 networks:
   chat-app-network:
+    external:
+      name: chat-app-network
+  database-network:

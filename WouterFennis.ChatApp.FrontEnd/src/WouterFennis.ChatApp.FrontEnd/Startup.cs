@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using WouterFennis.ChatApp.FrontEnd.Agents;
 
 namespace WouterFennis.ChatApp.FrontEnd
 {
@@ -37,6 +38,16 @@ namespace WouterFennis.ChatApp.FrontEnd
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc();
+
+            // DI
+            Func<IServiceProvider, ChatRoomBackendServiceAgent> chatRoomServiceAgentsupplier =
+            (
+                p => new ChatRoomBackendServiceAgent
+                (
+                    new Uri(Environment.GetEnvironmentVariable("chat-app-backend-service"))
+                )
+            );
+            services.AddScoped<IChatRoomBackendServiceAgent, ChatRoomBackendServiceAgent>(chatRoomServiceAgentsupplier);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

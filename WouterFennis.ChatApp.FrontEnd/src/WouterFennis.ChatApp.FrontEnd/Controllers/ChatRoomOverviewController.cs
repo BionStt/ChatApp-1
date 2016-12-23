@@ -19,7 +19,6 @@ namespace WouterFennis.ChatApp.FrontEnd.Controllers
         }
 
         // GET: /<controller>/
-
         public IActionResult Index()
         {
             var retrievedChatRooms = (List<ChatRoom>)_chatRoomService.GetAllChatRooms();
@@ -32,6 +31,15 @@ namespace WouterFennis.ChatApp.FrontEnd.Controllers
             List<ChatRoomViewModel> chatRoomList = query.ToList();
 
             return View(chatRoomList);
+        }
+
+        // GET: /<controller>/JoinChatRoom/{id}
+        public IActionResult JoinChatRoom(long chatRoomId)
+        {
+            var chatRoom = (ChatRoom)_chatRoomService.GetChatRoomById(chatRoomId);
+            var chatRoomViewModel = new ChatRoomViewModel(chatRoom);
+
+            return View("SingleChatRoom", chatRoomViewModel);
         }
     }
 }
